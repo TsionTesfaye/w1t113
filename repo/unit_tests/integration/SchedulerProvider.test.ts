@@ -67,8 +67,8 @@ function createWindowMock() {
         listeners.delete(listener);
       }
     }),
-    setInterval,
-    clearInterval
+    setInterval: (...args: Parameters<typeof globalThis.setInterval>) => globalThis.setInterval(...args),
+    clearInterval: (timer: ReturnType<typeof globalThis.setInterval>) => globalThis.clearInterval(timer)
   };
 
   return {
