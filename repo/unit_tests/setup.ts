@@ -1,12 +1,4 @@
 import { webcrypto } from 'node:crypto';
-import { afterEach, vi } from 'vitest';
-
-afterEach(() => {
-  // Prevent fake-timer leakage across tests/files.
-  vi.clearAllTimers();
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
-});
 
 if (typeof globalThis.crypto === 'undefined') {
   Object.defineProperty(globalThis, 'crypto', {
