@@ -123,6 +123,10 @@ async function evaluateLeadership(): Promise<void> {
 }
 
 export async function startScheduler(): Promise<void> {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   if (started) {
     return;
   }

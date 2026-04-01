@@ -15,3 +15,29 @@ if (typeof globalThis.btoa === 'undefined') {
 if (typeof globalThis.atob === 'undefined') {
   globalThis.atob = (value: string): string => Buffer.from(value, 'base64').toString('binary');
 }
+
+if (typeof globalThis.CustomEvent === 'undefined') {
+  const EventBase = (globalThis.Event ??
+    class {
+      type: string;
+
+      constructor(type: string) {
+        this.type = type;
+      }
+    }) as unknown as typeof Event;
+
+  class NodeCustomEvent<T = unknown> extends EventBase {
+    detail: T;
+
+    constructor(type: string, options?: { detail?: T } & EventInit) {
+      super(type, options);
+      this.detail = options?.detail as T;
+    }
+  }
+
+  Object.defineProperty(globalThis, 'CustomEvent', {
+    value: NodeCustomEvent,
+    configurable: true,
+    writable: true
+  });
+}

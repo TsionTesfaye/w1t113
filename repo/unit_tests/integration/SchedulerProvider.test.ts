@@ -90,7 +90,9 @@ describe('schedulerProvider', () => {
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
+    delete (globalThis as { window?: unknown }).window;
   });
 
   it('runs startup catch-up once and ticks every 60 seconds without duplicate start', async () => {
@@ -100,10 +102,12 @@ describe('schedulerProvider', () => {
     await startScheduler();
     expect(runStartupCatchUpMock).toHaveBeenCalledTimes(1);
 
-    await vi.advanceTimersByTimeAsync(60_000);
+    vi.advanceTimersByTime(60_000);
+    await Promise.resolve();
     expect(runTickMock).toHaveBeenCalledTimes(1);
 
-    await vi.advanceTimersByTimeAsync(120_000);
+    vi.advanceTimersByTime(120_000);
+    await Promise.resolve();
     expect(runTickMock).toHaveBeenCalledTimes(3);
   });
 
@@ -126,10 +130,12 @@ describe('schedulerProvider', () => {
     await startScheduler();
     expect(runStartupCatchUpMock).toHaveBeenCalledTimes(0);
 
-    await vi.advanceTimersByTimeAsync(20_000);
+    vi.advanceTimersByTime(20_000);
+    await Promise.resolve();
     expect(runStartupCatchUpMock).toHaveBeenCalledTimes(0);
 
-    await vi.advanceTimersByTimeAsync(20_000);
+    vi.advanceTimersByTime(20_000);
+    await Promise.resolve();
     expect(runStartupCatchUpMock).toHaveBeenCalledTimes(1);
   });
 });

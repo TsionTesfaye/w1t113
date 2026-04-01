@@ -5,6 +5,10 @@ export interface MessageChangedDetail {
 const MESSAGE_CHANGED_EVENT = 'studioops:message-changed';
 
 export function emitMessageChanged(userId: string): void {
+  if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') {
+    return;
+  }
+
   window.dispatchEvent(
     new CustomEvent<MessageChangedDetail>(MESSAGE_CHANGED_EVENT, {
       detail: { userId }
@@ -15,6 +19,14 @@ export function emitMessageChanged(userId: string): void {
 export function subscribeMessageChanged(
   callback: (detail: MessageChangedDetail) => void
 ): () => void {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.addEventListener !== 'function' ||
+    typeof window.removeEventListener !== 'function'
+  ) {
+    return () => undefined;
+  }
+
   const listener: EventListener = (event) => {
     const customEvent = event as CustomEvent<MessageChangedDetail>;
     if (!customEvent.detail?.userId) {
