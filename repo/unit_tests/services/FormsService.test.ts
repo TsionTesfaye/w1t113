@@ -5,11 +5,7 @@ import type { HealthFormRepository } from '@/repositories/HealthFormRepository';
 import type { NotificationService } from '@/services/NotificationService';
 import type { AuthService } from '@/services/AuthService';
 import { HealthFormServiceError, createHealthFormService } from '@/services/HealthFormService';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-afterEach(() => {
-  vi.useRealTimers();
-});
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ADMIN_ID = 'admin-1';
 const CLIENT_ID = 'client-1';

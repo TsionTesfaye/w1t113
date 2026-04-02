@@ -19,11 +19,7 @@ import type {
 } from '@/repositories/CommunityRepository';
 import type { NotificationService } from '@/services/NotificationService';
 import { createCommunityService } from '@/services/CommunityService';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-afterEach(() => {
-  vi.useRealTimers();
-});
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ADMIN_ID = 'admin-1';
 const MODERATOR_ID = 'moderator-1';
