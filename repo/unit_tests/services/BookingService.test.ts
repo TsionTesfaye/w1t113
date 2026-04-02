@@ -2,7 +2,11 @@ import type { AuthenticatedUser, Booking, BookingStatus, Photographer, ServiceIt
 import type { AuthRepository } from '@/repositories/AuthRepository';
 import type { BookingRepository } from '@/repositories/BookingRepository';
 import { BookingServiceError, createBookingService } from '@/services/BookingService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 const SERVICE_ID = 'service-headshots-30';
 const USER_1 = 'client-1';

@@ -1,7 +1,11 @@
 import type { AuthenticatedUser, Session } from '@/app/types/domain';
 import type { AuthRepository } from '@/repositories/AuthRepository';
 import { AuthError, createAuthService } from '@/services/AuthService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 class MemoryStorage {
   private readonly map = new Map<string, string>();

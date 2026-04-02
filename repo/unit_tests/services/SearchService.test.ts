@@ -26,7 +26,11 @@ import type {
 } from '@/repositories/CommunityRepository';
 import type { SearchRepository } from '@/repositories/SearchRepository';
 import { createSearchService, tokenize, tokenizeWithConfig } from '@/services/SearchService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 class InMemorySearchRepository implements SearchRepository {
   private readonly entries = new Map<string, {

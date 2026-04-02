@@ -9,7 +9,11 @@ import type { AdminConfigRepository } from '@/repositories/AdminConfigRepository
 import type { AuthRepository } from '@/repositories/AuthRepository';
 import type { NotificationRepository } from '@/repositories/NotificationRepository';
 import { createNotificationService } from '@/services/NotificationService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 vi.mock('@/services/notificationEvents', () => ({
   emitNotificationChanged: vi.fn()

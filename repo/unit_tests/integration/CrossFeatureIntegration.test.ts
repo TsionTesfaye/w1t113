@@ -28,7 +28,11 @@ import { createHealthFormService } from '@/services/HealthFormService';
 import { createMessageService, type MessageService } from '@/services/MessagingService';
 import { createNotificationService } from '@/services/NotificationService';
 import { createSearchService } from '@/services/SearchService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 vi.mock('@/services/notificationEvents', () => ({
   emitNotificationChanged: vi.fn()

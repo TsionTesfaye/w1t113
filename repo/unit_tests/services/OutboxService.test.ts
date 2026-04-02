@@ -1,7 +1,11 @@
 import type { OutboxMessage } from '@/app/types/domain';
 import type { OutboxRepository } from '@/repositories/OutboxRepository';
 import { createOutboxService } from '@/services/OutboxService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 class InMemoryOutboxRepository implements OutboxRepository {
   messages: OutboxMessage[] = [];

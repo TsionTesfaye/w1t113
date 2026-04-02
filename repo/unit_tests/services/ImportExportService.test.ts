@@ -3,7 +3,11 @@ import { DB_VERSION, STORE_NAMES, type StoreName } from '@/db/schema';
 import type { AuthRepository } from '@/repositories/AuthRepository';
 import type { ImportExportRepository } from '@/repositories/ImportExportRepository';
 import { createImportExportService } from '@/services/ImportExportService';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 class InMemoryImportExportRepository implements ImportExportRepository {
   stores: Record<StoreName, unknown[]> = {} as Record<StoreName, unknown[]>;
