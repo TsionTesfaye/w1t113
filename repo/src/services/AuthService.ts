@@ -98,10 +98,6 @@ export interface AuthService {
   getCachedEncryptionKeyForUser(userId: string): CryptoKey | null;
 }
 
-function normalizeUsername(value: string): string {
-  return value.trim();
-}
-
 function normalizeRegistrationUsername(value: string): string {
   return value.trim().toLowerCase();
 }
@@ -540,16 +536,16 @@ class LocalAuthService implements AuthService {
   async login(input: LoginInput): Promise<AuthenticatedSession> {
     await this.ensureDefaultUsers();
 
-    const username = normalizeUsername(input.username);
+    const normalizedUsername = input.username.trim().toLowerCase();
     const password = input.password;
-    if (!username || !password) {
+    if (!normalizedUsername || !password) {
       throw new AuthError('INVALID_CREDENTIALS', 'Invalid username or password.');
     }
 
     const now = nowTimestamp();
     await this.authRepository.purgeExpiredSessions(now);
 
-    const user = await this.authRepository.findUserByUsername(username);
+    const user = await this.authRepository.findUserByUsername(normalizedUsername);
     if (!user) {
       throw new AuthError('INVALID_CREDENTIALS', 'Invalid username or password.');
     }

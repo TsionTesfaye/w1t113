@@ -1,2 +1,10 @@
 /// <reference types="vite/client" />
-VITE_AUTH_SEED_DEFAULT_ADMIN=true
+
+interface ImportMetaEnv {
+  readonly VITE_AUTH_SEED_DEFAULT_ADMIN?: string;
+  readonly VITE_VERBOSE_LOGS?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

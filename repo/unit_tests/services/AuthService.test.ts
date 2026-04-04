@@ -140,6 +140,16 @@ describe('AuthService', () => {
     expect(stored?.passwordHash).not.toBe('strongpass123');
   });
 
+  it('prevents duplicate registrations that differ only by casing', async () => {
+    await service.register('john', 'strongpass123');
+
+    await expect(service.register('JOHN', 'strongpass123')).rejects.toMatchObject({
+      code: 'USERNAME_ALREADY_EXISTS'
+    });
+
+    expect(repository.users.filter((user) => user.username === 'john')).toHaveLength(1);
+  });
+
   it('logs in with correct credentials and fails with wrong password', async () => {
     await service.register('client2', 'strongpass123');
 
@@ -159,6 +169,113 @@ describe('AuthService', () => {
     ).rejects.toMatchObject({
       code: 'INVALID_CREDENTIALS'
     });
+  });
+
+  it('allows mixed-case login for an existing lowercase username', async () => {
+    await service.register('john', 'strongpass123');
+
+    const session = await service.login({
+      username: 'JoHn',
+      password: 'strongpass123',
+      rememberMe: false
+    });
+
+    expect(session.user.username).toBe('john');
+  });
+
+  it('allows trim + mixed-case login for an existing lowercase username', async () => {
+    await service.register('john', 'strongpass123');
+
+    const session = await service.login({
+      username: '  JoHn  ',
+      password: 'strongpass123',
+      rememberMe: false
+    });
+
+    expect(session.user.username).toBe('john');
+  });
+
+  it('fails login when username does not exist', async () => {
+    await service.register('john', 'strongpass123');
+
+    await expect(
+      service.login({
+        username: 'missing-user',
+        password: 'strongpass123',
+        rememberMe: false
+      })
+    ).rejects.toMatchObject({
+      code: 'INVALID_CREDENTIALS'
+    });
+  });
+
+  it('accumulates failed attempts across username casing variants', async () => {
+    await service.register('john', 'strongpass123');
+
+    await expect(
+      service.login({
+        username: 'john',
+        password: 'wrong-password',
+        rememberMe: false
+      })
+    ).rejects.toMatchObject({
+      code: 'INVALID_CREDENTIALS'
+    });
+
+    await expect(
+      service.login({
+        username: 'JOHN',
+        password: 'wrong-password',
+        rememberMe: false
+      })
+    ).rejects.toMatchObject({
+      code: 'INVALID_CREDENTIALS'
+    });
+
+    const user = repository.users.find((candidate) => candidate.username === 'john');
+    expect(user?.failedAttempts).toBe(2);
+    expect(user?.lockUntil).toBeNull();
+  });
+
+  it('triggers and enforces lockout regardless of username casing', async () => {
+    await service.register('john', 'strongpass123');
+
+    const attempts = ['john', 'JOHN', 'jOhN', 'JoHn'];
+    for (const username of attempts) {
+      await expect(
+        service.login({
+          username,
+          password: 'wrong-password',
+          rememberMe: false
+        })
+      ).rejects.toMatchObject({
+        code: 'INVALID_CREDENTIALS'
+      });
+    }
+
+    await expect(
+      service.login({
+        username: 'JOHN',
+        password: 'wrong-password',
+        rememberMe: false
+      })
+    ).rejects.toMatchObject({
+      code: 'ACCOUNT_LOCKED'
+    });
+
+    await expect(
+      service.login({
+        username: 'jOhN',
+        password: 'strongpass123',
+        rememberMe: false
+      })
+    ).rejects.toMatchObject({
+      code: 'ACCOUNT_LOCKED'
+    });
+
+    const user = repository.users.find((candidate) => candidate.username === 'john');
+    expect(user?.failedAttempts).toBe(5);
+    expect(typeof user?.lockUntil).toBe('number');
   });
 
   it('locks account after five failed attempts and blocks login during lock period', async () => {
